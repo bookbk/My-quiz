@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>คลังข้อสอบกฎหมายภาษี</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Google Identity Services Library -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #151c2c;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      
+      --theme-color: #6366f1;
+      --theme-glow: rgba(99, 102, 241, 0.25);
+      
+      --success-color: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --success-border: #059669;
+      
+      --wrong-color: #ef4444;
+      --wrong-bg: rgba(239, 68, 68, 0.15);
+      --wrong-border: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Prompt', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 70%),
+        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .menu-view, .quiz-card, .summary-card, .loading-view {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 28px 22px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Google Profile Bar */
+    .user-profile-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      padding: 10px 14px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+    }
+
+    .user-profile-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--theme-color);
+      flex-shrink: 0;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .user-email {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-logout {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      font-size: 11px;
+      padding: 5px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-logout:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Resume Box UI */
+    .resume-card {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+    }
+    .resume-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #a7f3d0;
+      margin-bottom: 4px;
+    }
+    .resume-detail {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .resume-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .menu-header-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .btn-icon-back {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-icon-back:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(-2px);
+    }
+
+    .menu-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .menu-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .config-section {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .config-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .config-row:last-child { margin-bottom: 0; }
+
+    .config-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .limit-selector {
+      display: flex;
+      gap: 6px;
+    }
+
+    .limit-btn {
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .limit-btn.active {
+      background: var(--theme-color);
+      color: #ffffff;
+      border-color: var(--theme-color);
+      box-shadow: 0 0 12px var(--theme-glow);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 22px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .3s;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px; width: 16px;
+      left: 2px; bottom: 2px;
+      background-color: var(--text-muted);
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--theme-color); }
+    input:checked + .slider:before { 
+      transform: translateX(20px); 
+      background-color: #ffffff;
+    }
+
+    .mode-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .menu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 42vh;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .menu-btn {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-main);
+      font-size: 14px;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .menu-btn-all {
+      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .badge-count {
+      font-size: 11px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 3px 8px;
+      border-radius: 8px;
+      color: var(--text-muted);
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 4px;
+      background-color: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--theme-color), #818cf8);
+      box-shadow: 0 0 10px var(--theme-glow);
+      transition: width 0.3s ease;
+    }
+
+    .timer-bar-container {
+      width: 100%;
+      height: 3px;
+      background-color: transparent;
+      margin-top: -12px;
+      margin-bottom: 16px;
+      display: none;
+      overflow: hidden;
+    }
+
+    .timer-bar-fill {
+      height: 100%;
+      width: 100%;
+      background-color: #f59e0b;
+      box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+    }
+
+    .quiz-header-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .question-number {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--theme-color);
+      letter-spacing: 1px;
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .streak-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: none;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .score-badge {
+      font-size: 11px;
+      font-weight: 600;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .question-text {
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.6;
+      color: #ffffff;
+      margin-bottom: 20px;
+    }
+
+    .options-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-item {
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font-size: 13.5px;
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-item.selectable:hover {
+      border-color: var(--theme-color);
+      background: rgba(99, 102, 241, 0.08);
+      transform: translateX(2px);
+    }
+
+    .option-item.correct {
+      border-color: var(--success-border) !important;
+      background: var(--success-bg) !important;
+      color: #a7f3d0;
+    }
+
+    .option-item.wrong {
+      border-color: var(--wrong-border) !important;
+      background: var(--wrong-bg) !important;
+      color: #fca5a5;
+    }
+
+    .option-item.faded { opacity: 0.35; }
+
+    .explanation-box {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px rgba(255, 255, 255, 0.1) solid;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #d1d5db;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-prev { 
+      background: rgba(255, 255, 255, 0.05); 
+      color: var(--text-muted); 
+      border: 1px solid var(--card-border);
+    }
+    .btn-prev:disabled { opacity: 0.2; cursor: not-allowed; }
+    
+    .btn-next { 
+      background: var(--theme-color); 
+      color: white; 
+      flex-grow: 1; 
+      box-shadow: 0 4px 15px var(--theme-glow);
+    }
+    .btn-next:hover { opacity: 0.9; }
+
+    .btn-home { 
+      background: rgba(255, 255, 255, 0.05); 
+      color: var(--text-main); 
+      border: 1px solid var(--card-border); 
+    }
+
+    .summary-card { text-align: center; }
+    .summary-icon { font-size: 48px; margin-bottom: 8px; }
+    .summary-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; color: #fff; }
+
+    .rank-badge-box {
+      display: inline-block;
+      margin: 6px auto 16px auto;
+      background: rgba(245, 158, 11, 0.1);
+      color: #fcd34d;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .summary-score-box {
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--theme-color);
+      margin: 8px 0px;
+    }
+    .summary-score-box span { font-size: 16px; color: var(--text-muted); }
+    .summary-info-text { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+    .loading-view { text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- หน้า Sign in with Google -->
+    <div id="login-area" class="menu-view" style="text-align: center;">
+      <div style="font-size: 50px; margin-bottom: 15px;">📝</div>
+      <h2 class="menu-title" style="margin-bottom: 10px;">คลังข้อสอบกฎหมายภาษี</h2>
+      <p class="menu-subtitle" style="margin-bottom: 24px;">เข้าสู่ระบบด้วย Google เพื่อบันทึกประวัติและสะสมคะแนน</p>
+      
+      <!-- ปุ่ม Google Sign-In -->
+      <div style="display: flex; justify-content: center; width: 100%;">
+        <div id="g_id_onload"
+             data-client_id="361753809442-viiq59949d15amvi4ra3han4l67dab5o.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_select="true">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-size="large"
+             data-theme="outline"
+             data-text="sign_in_with"
+             data-shape="rectangular"
+             data-logo_alignment="left">
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading Area -->
+    <div id="loading-area" class="loading-view" style="display: none;">
+      <h3 style="font-weight: 500; color: var(--text-main);">⚡ LOADING SYSTEM...</h3>
+    </div>
+    
+    <!-- Main Category Menu View -->
+    <div id="menu-area" class="menu-view" style="display: none;">
+      
+      <!-- User Profile Header -->
+      <div class="user-profile-bar">
+        <div class="user-profile-left">
+          <img id="user-avatar-img" class="user-avatar" src="" alt="Profile">
+          <div class="user-info">
+            <span class="user-name" id="user-name-text">กำลังโหลด...</span>
+            <span class="user-email" id="user-email-text">...</span>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+      </div>
+
+      <!-- Resume Progress Box -->
+      <div id="resume-box" class="resume-card" style="display: none;">
+        <div class="resume-title">📌 คุณมีข้อสอบทำค้างไว้</div>
+        <div class="resume-detail">
+          หมวด: <span id="resume-cat-text" style="color: #fff; font-weight:600;">-</span><br>
+          ทำถึงข้อที่: <span id="resume-progress-text" style="color: #fff; font-weight:600;">0/0</span> (คะแนนปัจจุบัน: <span id="resume-score-text" style="color: #10b981; font-weight:600;">0</span>)
+        </div>
+        <div class="resume-actions">
+          <button class="btn" style="background: #10b981; color: white; flex: 1; padding: 8px 12px; font-size: 12.5px;" onclick="resumeQuiz()">▶ ทำต่อจากเดิม</button>
+          <button class="btn" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); padding: 8px 12px; font-size: 12.5px;" onclick="clearSavedProgress()">เริ่มใหม่</button>
+        </div>
+      </div>
+
+      <div class="menu-header-bar">
+        <button id="back-to-cat-btn" class="btn-icon-back" style="display: none;" onclick="renderCategoryMenu()">←</button>
+        <h2 class="menu-title" id="menu-title-text">คลังข้อสอบกฎหมายภาษี</h2>
+      </div>
+      <p class="menu-subtitle" id="menu-subtitle-text">เลือกหมวดหมู่ที่ต้องการฝึกฝน</p>
+      
+      <div class="config-section">
+        <div class="config-row">
+          <div class="config-label">⏱️ จับเวลา 20 วิ/ข้อ</div>
+          <label class="switch">
+            <input type="checkbox" id="timer-toggle-input" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="config-row">
+          <div class="config-label">🔀 เปิดโหมดสุ่มคำถาม</div>
+          <label class="switch">
+            <input type="checkbox" id="shuffle-toggle-input">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="config-row">
+          <div class="config-label">🎯 จำนวนข้อต่อรอบ</div>
+          <div class="limit-selector">
+            <button class="limit-btn active" onclick="setLimit(10, this)">10 ข้อ</button>
+            <button class="limit-btn" onclick="setLimit(20, this)">20 ข้อ</button>
+            <button class="limit-btn" onclick="setLimit('all', this)">ทั้งหมด</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mode-section-title" id="section-header-title">📂 หมวดหมู่หลัก</div>
+      
+      <div id="dynamic-menu-list" class="menu-list"></div>
+    </div>
+
+    <!-- Quiz Area -->
+    <div id="quiz-area" style="display: none;">
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      
+      <div class="timer-bar-container" id="timer-bar-container">
+        <div class="timer-bar-fill" id="timer-bar-fill"></div>
+      </div>
+
+      <div class="quiz-card">
+        <div class="quiz-header-meta">
+          <div class="question-number" id="question-idx">QUESTION 1</div>
+          <div class="header-badges">
+            <div class="streak-badge" id="streak-badge">⚡ COMBO x0</div>
+            <div class="score-badge" id="live-score">คะแนน: 0</div>
+          </div>
+        </div>
+        <div class="question-text" id="question-text">กำลังโหลด...</div>
+        
+        <ul class="options-list" id="options-container"></ul>
+        
+        <div class="explanation-box" id="explanation-box" style="display: none;">
+          <strong>💡 เกร็ดความรู้เพิ่มเติม:</strong> <span id="explanation-text"></span>
+        </div>
+      </div>
+
+      <div style="text-align: center; font-size: 12px; color: var(--text-muted); font-weight: 500; margin-top: 14px;" id="progress-text">ข้อที่ 1</div>
+
+      <div class="footer-actions">
+        <button class="btn btn-home" onclick="goHome()">หน้าแรก</button>
+        <button class="btn btn-prev" id="prev-btn" onclick="prevQuestion()">ก่อนหน้า</button>
+        <button class="btn btn-next" id="next-btn" onclick="nextQuestion()">ข้อถัดไป</button>
+      </div>
+    </div>
+
+    <!-- Summary Area -->
+    <div id="summary-area" class="summary-card" style="display: none;">
+      <div class="summary-icon" id="summary-rank-icon">🎺</div>
+      <h2 class="summary-title" id="summary-cat-title">สรุปผลคะแนน</h2>
+      
+      <div class="rank-badge-box" id="rank-badge-text">ยศ: กำลังคำนวณ...</div>
+      
+      <div class="summary-score-box" id="final-score-text">0 <span>/ 5 คะแนน</span></div>
+      <div class="summary-info-text" id="summary-max-streak-text">ทำคอมโบสูงสุด: 0 ข้อต่อเนื่อง ⚡</div>
+      
+      <button class="btn btn-next" style="width:100%;" onclick="goHome()">กลับสู่หน้าแรก</button>
+    </div>
+    
+  </div>
+
+  <script>
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSbkDPY9eFM_vtttQ9Yd2VP5cs2GeSJyfhuzfn6qYgRv5tAEjGOpIIZgRLj5qk0CyRB_GTo22l65PQE/pub?gid=0&single=true&output=csv";
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw1HA2Y6TdSyspQV5IYoMsSxNsgmGp6fBTKQ5xi6gp9yMKa-asYgMP6tIKBkhXAyT-P/exec";
+
+    let currentUser = { name: "", email: "", picture: "" };
+    let allData = [];
+    let filteredData = [];
+    let currentIndex = 0;
+    let currentCategoryName = "";
+    let selectedCategory = ""; 
+    let hasAnswered = false; 
+    let maxQuestionsLimit = 10; 
+    
+    let totalScore = 0;
+    let answeredQuestions = {}; 
+    let currentStreak = 0;
+    let maxStreak = 0;
+    let isTimerEnabled = true;
+    let isShuffleMode = false;
+    const FIXED_TIME = 20; 
+    let timerInterval = null;
+    let audioCtx = null;
+
+    function getStorageKey() {
+      return `quiz_progress_${currentUser.email}`;
+    }
+
+    function saveProgress() {
+      if (!currentUser.email) return;
+      const progressData = {
+        categoryName: currentCategoryName,
+        selectedCategory: selectedCategory,
+        currentIndex: currentIndex,
+        totalScore: totalScore,
+        currentStreak: currentStreak,
+        maxStreak: maxStreak,
+        answeredQuestions: answeredQuestions,
+        filteredData: filteredData,
+        lastUpdated: new Date().getTime()
+      };
+      localStorage.setItem(getStorageKey(), JSON.stringify(progressData));
+    }
+
+    function checkSavedProgress() {
+      if (!currentUser.email) return;
+      const saved = localStorage.getItem(getStorageKey());
+      const resumeBox = document.getElementById('resume-box');
+      
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          document.getElementById('resume-cat-text').innerText = data.categoryName;
+          document.getElementById('resume-progress-text').innerText = `${data.currentIndex + 1}/${data.filteredData.length}`;
+          document.getElementById('resume-score-text').innerText = data.totalScore;
+          resumeBox.style.display = 'block';
+        } catch(e) {
+          resumeBox.style.display = 'none';
+        }
+      } else {
+        resumeBox.style.display = 'none';
+      }
+    }
+
+    function resumeQuiz() {
+      const saved = localStorage.getItem(getStorageKey());
+      if (!saved) return;
+      
+      initAudio();
+      const data = JSON.parse(saved);
+      currentCategoryName = data.categoryName;
+      selectedCategory = data.selectedCategory;
+      currentIndex = data.currentIndex;
+      totalScore = data.totalScore;
+      currentStreak = data.currentStreak;
+      maxStreak = data.maxStreak;
+      answeredQuestions = data.answeredQuestions;
+      filteredData = data.filteredData;
+
+      document.getElementById('menu-area').style.display = 'none';
+      document.getElementById('quiz-area').style.display = 'block';
+      showQuestion();
+    }
+
+    function clearSavedProgress() {
+      if (currentUser.email) {
+        localStorage.removeItem(getStorageKey());
+      }
+      document.getElementById('resume-box').style.display = 'none';
+    }
+
+    function parseJwt (token) {
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+
+    window.onload = function() {
+      document.body.addEventListener('click', initAudio, { once: true });
+      
+      const savedUser = localStorage.getItem('tax_quiz_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        showLoggedInUser();
+      }
+    };
+
+    function showLoggedInUser() {
+      document.getElementById('user-name-text').innerText = currentUser.name;
+      document.getElementById('user-email-text').innerText = currentUser.email;
+      document.getElementById('user-avatar-img').src = currentUser.picture;
+
+      document.getElementById('login-area').style.display = 'none';
+      document.getElementById('loading-area').style.display = 'block';
+      
+      loadDataFromSheet();
+    }
+
+    function handleCredentialResponse(response) {
+      const responsePayload = parseJwt(response.credential);
+      currentUser.name = responsePayload.name;
+      currentUser.email = responsePayload.email;
+      currentUser.picture = responsePayload.picture;
+
+      localStorage.setItem('tax_quiz_user', JSON.stringify(currentUser));
+      showLoggedInUser();
+    }
+
+    function logout() {
+      localStorage.removeItem('tax_quiz_user');
+      if (window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.disableAutoSelect();
+      }
+      location.reload();
+    }
+
+    function initAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } }
+
+    function playSound(type) {
+      try {
+        initAudio(); if (!audioCtx) return;
+        const now = audioCtx.currentTime;
+        if (type === 'correct') {
+          let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+          osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'sine';
+          osc.frequency.setValueAtTime(587.33, now); osc.frequency.setValueAtTime(880, now + 0.08);
+          gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'wrong') {
+          let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+          osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now); osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+          gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+          osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'fire') {
+          let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+          osc.connect(gain); gain.connect(audioCtx.destination); osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now); osc.frequency.exponentialRampToValueAtTime(1760, now + 0.12);
+          gain.gain.setValueAtTime(0.12, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          osc.start(now); osc.stop(now + 0.15);
+        } else if (type === 'tada') {
+          const notes = [261.63, 329.63, 392.00, 523.25];
+          notes.forEach(freq => {
+            let osc1 = audioCtx.createOscillator(); let gain1 = audioCtx.createGain();
+            osc1.type = 'triangle'; osc1.frequency.setValueAtTime(freq, now);
+            osc1.connect(gain1); gain1.connect(audioCtx.destination);
+            gain1.gain.setValueAtTime(0.08, now); gain1.gain.linearRampToValueAtTime(0.001, now + 0.15);
+            osc1.start(now); osc1.stop(now + 0.15);
+          });
+        }
+      } catch (e) { console.log(e); }
+    }
+
+    function setLimit(value, btnElement) {
+      maxQuestionsLimit = value;
+      const buttons = document.querySelectorAll('.limit-btn');
+      buttons.forEach(b => b.classList.remove('active'));
+      btnElement.classList.add('active');
+    }
+
+    function parseCSV(text) {
+      let lines = []; let row = [""]; let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        let c = text[i]; let next = text[i+1];
+        if (c === '"') {
+          if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+          else { inQuotes = !inQuotes; }
+        } else if (c === ',' && !inQuotes) { row.push(''); }
+        else if ((c === '\r' || c === '\n') && !inQuotes) {
+          if (c === '\r' && next === '\n') { i++; }
+          lines.push(row); row = [''];
+        } else { row[row.length - 1] += c; }
+      }
+      if (row.length > 1 || row[0] !== '') lines.push(row);
+      return lines;
+    }
+
+    function loadDataFromSheet() {
+      fetch(SHEET_CSV_URL)
+        .then(response => {
+          if (!response.ok) throw new Error("Network error");
+          return response.text();
+        })
+        .then(text => {
+          let csvData = parseCSV(text);
+          if (csvData.length <= 1) {
+            showErrorUI("⚠️ ไม่พบข้อมูลข้อสอบในตารางครับ");
+            return;
+          }
+
+          allData = [];
+          let hasSubSetCol = csvData[0].length >= 9; 
+
+          for (let i = 1; i < csvData.length; i++) {
+            let row = csvData[i];
+            let cat = row[0] ? row[0].trim() : "ทั่วไป";
+            let sub = "ชุดหลัก";
+            let qIdx = 1, optIdx = 2, ansIdx = 6, expIdx = 7;
+
+            if (hasSubSetCol) {
+              sub = row[1] ? row[1].trim() : "ชุดหลัก";
+              qIdx = 2; optIdx = 3; ansIdx = 7; expIdx = 8;
+            }
+
+            if (!row[qIdx] || row[qIdx].trim() === "") continue;
+
+            allData.push({
+              category: cat,
+              subset: sub,
+              question: row[qIdx].trim(),
+              options: [
+                row[optIdx] ? row[optIdx].trim() : "", 
+                row[optIdx+1] ? row[optIdx+1].trim() : "", 
+                row[optIdx+2] ? row[optIdx+2].trim() : "", 
+                row[optIdx+3] ? row[optIdx+3].trim() : ""
+              ],
+              correctAnswer: row[ansIdx] ? row[ansIdx].trim() : "",
+              explanation: row[expIdx] ? row[expIdx].trim() : ""
+            });
+          }
+
+          if (allData.length === 0) {
+            showErrorUI("⚠️ ไม่พบข้อสอบที่สมบูรณ์ในตารางครับ");
+            return;
+          }
+
+          document.getElementById('loading-area').style.display = 'none';
+          document.getElementById('menu-area').style.display = 'block';
+          renderCategoryMenu();
+        })
+        .catch(err => {
+          console.error(err);
+          showErrorUI("❌ โหลดข้อมูลล้มเหลว! กรุณาตรวจสอบการตั้งค่า Publish to Web บน Google Sheet ครับ");
+        });
+    }
+
+    function showErrorUI(msg) {
+      document.getElementById('loading-area').innerHTML = `<h3 style='color:#ef4444; line-height:1.5; font-weight:500;'>${msg}</h3>`;
+    }
+
+    function getCategoryEmoji(catName) {
+      const name = catName.toLowerCase();
+      if (name.includes('ภาษีเงินได้บุคคลธรรมดา') || name.includes('ภ.ง.ด.')) return '👤';
+      if (name.includes('ภาษีเงินได้นิติบุคคล')) return '🏢';
+      if (name.includes('มูลค่าเพิ่ม') || name.includes('vat')) return '🏷️';
+      if (name.includes('หัก ณ ที่จ่าย')) return '✂️';
+      if (name.includes('ธุรกิจเฉพาะ')) return '💼';
+      if (name.includes('อากรแสตมป์')) return '✉️';
+      return '📁';
+    }
+
+    function renderCategoryMenu() {
+      checkSavedProgress();
+      
+      const container = document.getElementById('dynamic-menu-list');
+      container.innerHTML = '';
+      
+      document.getElementById('menu-title-text').innerText = "คลังข้อสอบกฎหมายภาษี";
+      document.getElementById('menu-subtitle-text').innerText = "เลือกหมวดหมู่ที่ต้องการฝึกฝน";
+      document.getElementById('section-header-title').innerText = "📂 หมวดหมู่หลัก";
+      document.getElementById('back-to-cat-btn').style.display = "none";
+
+      const categories = [...new Set(allData.map(item => item.category))];
+
+      if (categories.length > 1) {
+        const btnAll = document.createElement('button');
+        btnAll.className = 'menu-btn menu-btn-all';
+        btnAll.onclick = function() { startQuiz("ทุกหมวดหมู่คละกัน", "ทั้งหมด"); };
+        btnAll.innerHTML = `<span>🔥 คละข้อสอบทุกหมวดหมู่</span> <span class="badge-count" style="background:rgba(99,102,241,0.2); color:#a5b4fc;">${allData.length} ข้อ</span>`;
+        container.appendChild(btnAll);
+      }
+
+      categories.forEach((cat) => {
+        const catCount = allData.filter(q => q.category === cat).length;
+        const emoji = getCategoryEmoji(cat);
+        
+        const btn = document.createElement('button');
+        btn.className = 'menu-btn';
+        btn.onclick = function() { renderSubSetMenu(cat); };
+        btn.innerHTML = `
+          <span style="font-weight:600; color:#ffffff;">${emoji} ${cat}</span> 
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge-count">${catCount} ข้อ</span>
+            <span style="color:var(--text-muted); font-size:12px;">❯</span>
+          </div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function renderSubSetMenu(catName) {
+      selectedCategory = catName;
+      const container = document.getElementById('dynamic-menu-list');
+      container.innerHTML = '';
+
+      const emoji = getCategoryEmoji(catName);
+      document.getElementById('menu-title-text').innerText = `${emoji} ${catName}`;
+      document.getElementById('menu-subtitle-text').innerText = "เลือกชุดข้อสอบย่อย";
+      document.getElementById('section-header-title').innerText = "📝 ชุดข้อสอบ";
+      document.getElementById('back-to-cat-btn').style.display = "flex";
+
+      const catItems = allData.filter(q => q.category === catName);
+      const subSets = [...new Set(catItems.map(item => item.subset))];
+
+      if (subSets.length > 1) {
+        const btnAllSub = document.createElement('button');
+        btnAllSub.className = 'menu-btn menu-btn-all';
+        btnAllSub.onclick = function() { startQuiz(catName, "ทั้งหมด"); };
+        btnAllSub.innerHTML = `<span>⚡ คละข้อสอบทุกชุดในหมวดนี้</span> <span class="badge-count" style="background:rgba(99,102,241,0.2); color:#a5b4fc;">${catItems.length} ข้อ</span>`;
+        container.appendChild(btnAllSub);
+      }
+
+      subSets.forEach(sub => {
+        const subItemsCount = catItems.filter(q => q.subset === sub).length;
+        const btnSub = document.createElement('button');
+        btnSub.className = 'menu-btn';
+        btnSub.onclick = function() { startQuiz(catName, sub); };
+        btnSub.innerHTML = `<span>📄 ${sub}</span> <span class="badge-count">${subItemsCount} ข้อ</span>`;
+        container.appendChild(btnSub);
+      });
+    }
+
+    function startQuiz(category, subSet = "ทั้งหมด") {
+      initAudio();
+      clearSavedProgress(); 
+      
+      currentCategoryName = (subSet !== "ทั้งหมด" && subSet !== "ชุดหลัก") ? `${category} (${subSet})` : category;
+      isShuffleMode = document.getElementById('shuffle-toggle-input').checked;
+      
+      let baseData = [];
+      if (category === "ทุกหมวดหมู่คละกัน") {
+        baseData = [...allData];
+      } else if (subSet === "ทั้งหมด") {
+        baseData = allData.filter(q => q.category === category);
+      } else {
+        baseData = allData.filter(q => q.category === category && q.subset === subSet);
+      }
+      
+      if (isShuffleMode) {
+        baseData = baseData.map(q => {
+          let shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+          return { ...q, options: shuffledOptions };
+        }).sort(() => Math.random() - 0.5);
+      }
+
+      if (maxQuestionsLimit !== 'all' && baseData.length > maxQuestionsLimit) {
+        filteredData = baseData.slice(0, parseInt(maxQuestionsLimit));
+      } else {
+        filteredData = baseData;
+      }
+
+      isTimerEnabled = document.getElementById('timer-toggle-input').checked;
+      currentIndex = 0; totalScore = 0; currentStreak = 0; maxStreak = 0; answeredQuestions = {}; 
+
+      document.getElementById('menu-area').style.display = 'none';
+      document.getElementById('quiz-area').style.display = 'block';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      clearInterval(timerInterval);
+      const currentQuiz = filteredData[currentIndex];
+      const progressPercent = ((currentIndex) / filteredData.length) * 100;
+      document.getElementById('progress-bar').style.width = progressPercent + '%';
+      
+      let modeTag = isShuffleMode ? " [โหมดสุ่ม] • " : " [โหมดเรียง] • ";
+      document.getElementById('question-idx').innerText = `${currentCategoryName.toUpperCase()}${modeTag}QUESTION ${currentIndex + 1}`;
+      document.getElementById('question-text').innerText = currentQuiz.question;
+      document.getElementById('progress-text').innerText = `ข้อที่ ${currentIndex + 1} จากทั้งหมด ${filteredData.length} ข้อในรอบนี้`;
+      document.getElementById('live-score').innerText = `คะแนน: ${totalScore}`;
+
+      updateStreakUI(); 
+      document.getElementById('explanation-box').style.display = 'none';
+      document.getElementById('prev-btn').disabled = (currentIndex === 0);
+      document.getElementById('next-btn').innerText = (currentIndex === filteredData.length - 1) ? "ดูสรุปคะแนน" : "ข้อถัดไป";
+
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+
+      const cachedAnswer = answeredQuestions[currentIndex];
+      hasAnswered = cachedAnswer !== undefined;
+
+      if(currentQuiz.options && currentQuiz.options.length > 0) {
+        currentQuiz.options.forEach((option) => {
+          if(!option || option.trim() === "") return;
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${option}</span><span class="status-icon"></span>`;
+          
+          if (!hasAnswered) {
+            li.className = 'option-item selectable'; 
+            li.onclick = function() {
+              if (!hasAnswered) checkAnswer(li, option, currentQuiz.correctAnswer, currentQuiz.explanation, false);
+            };
+          } else {
+            li.className = 'option-item';
+            const optionText = option.toString().trim();
+            if (optionText === currentQuiz.correctAnswer.trim()) {
+              li.classList.add('correct');
+              li.querySelector('.status-icon').innerHTML = '<span style="color:#10b981; font-weight:bold; margin-left:10px;">✓</span>';
+            } else if (cachedAnswer.isTimeout) {
+              li.classList.add('faded');
+            } else if (optionText === cachedAnswer.selectedText) {
+              li.classList.add('wrong');
+              li.querySelector('.status-icon').innerHTML = '<span style="color:#ef4444; font-weight:bold; margin-left:10px;">✗</span>';
+            } else { li.classList.add('faded'); }
+          }
+          optionsContainer.appendChild(li);
+        });
+      }
+
+      if (hasAnswered) {
+        if (currentQuiz.explanation && currentQuiz.explanation.trim() !== "") {
+          document.getElementById('explanation-text').innerText = currentQuiz.explanation;
+          document.getElementById('explanation-box').style.display = 'block';
+        }
+      } else {
+        if (isTimerEnabled) startCountdown();
+        else document.getElementById('timer-bar-container').style.display = 'none';
+      }
+    }
+
+    function startCountdown() {
+      const timerBarContainer = document.getElementById('timer-bar-container');
+      const timerBarFill = document.getElementById('timer-bar-fill');
+      timerBarContainer.style.display = 'block'; timerBarFill.style.width = '100%';
+      timerBarFill.style.backgroundColor = '#f59e0b';
+      let totalSteps = (FIXED_TIME * 1000) / 100; let currentStep = totalSteps;
+
+      timerInterval = setInterval(() => {
+        currentStep--; let percentage = (currentStep / totalSteps) * 100;
+        timerBarFill.style.width = percentage + '%';
+        if (percentage < 30) timerBarFill.style.backgroundColor = '#ef4444';
+        if (currentStep <= 0) {
+          clearInterval(timerInterval);
+          checkAnswer(null, "", filteredData[currentIndex].correctAnswer, filteredData[currentIndex].explanation, true);
+        }
+      }, 100);
+    }
+
+    function checkAnswer(selectedElement, selectedOption, correctAnswer, explanation, isTimeout) {
+      clearInterval(timerInterval); hasAnswered = true; 
+      const isCorrect = !isTimeout && (selectedOption.toString().trim() === correctAnswer.trim());
+      
+      answeredQuestions[currentIndex] = {
+        selectedText: isTimeout ? "" : selectedOption.toString().trim(),
+        isCorrect: isCorrect, isTimeout: isTimeout
+      };
+
+      if (isCorrect) {
+        totalScore++; currentStreak++;
+        if (currentStreak > maxStreak) maxStreak = currentStreak;
+        if (currentStreak >= 2) playSound('fire'); else playSound('correct');
+      } else { currentStreak = 0; playSound('wrong'); }
+      
+      document.getElementById('live-score').innerText = `คะแนน: ${totalScore}`;
+      updateStreakUI(); 
+
+      const items = document.getElementById('options-container').getElementsByTagName('li');
+      for (let item of items) {
+        item.classList.remove('selectable'); 
+        const itemText = item.querySelector('span').innerText.trim();
+        if (correctAnswer && itemText === correctAnswer.trim()) {
+          item.classList.add('correct');
+          item.querySelector('.status-icon').innerHTML = '<span style="color:#10b981; font-weight:bold; margin-left:10px;">✓</span>';
+        } else if (!isTimeout && item === selectedElement) {
+          item.classList.add('wrong');
+          item.querySelector('.status-icon').innerHTML = '<span style="color:#ef4444; font-weight:bold; margin-left:10px;">✗</span>';
+        } else { item.classList.add('faded'); }
+      }
+
+      if (isTimeout) document.getElementById('question-text').innerHTML = `<span style="color:#ef4444; font-weight:bold;">⏱️ หมดเวลา 20 วินาที!</span><br><br>` + filteredData[currentIndex].question;
+      if (explanation && explanation.trim() !== "") {
+        document.getElementById('explanation-text').innerText = explanation;
+        document.getElementById('explanation-box').style.display = 'block';
+      }
+
+      saveProgress();
+    }
+
+    function updateStreakUI() {
+      const streakBadge = document.getElementById('streak-badge');
+      if (currentStreak >= 2) { streakBadge.innerText = `⚡ COMBO x${currentStreak}`; streakBadge.style.display = 'block'; }
+      else { streakBadge.style.display = 'none'; }
+    }
+
+    function prevQuestion() { if (currentIndex > 0) { currentIndex--; showQuestion(); } }
+    function nextQuestion() {
+      if (!hasAnswered) { alert("กรุณาเลือกคำตอบก่อนครับ"); return; }
+      if (currentIndex < filteredData.length - 1) { currentIndex++; showQuestion(); } 
+      else { showScoreSummary(); }
+    }
+
+    function calculateRank(score, total) {
+      const percentage = (score / total) * 100;
+      if (percentage === 100) return { name: "มึงแม่งมันว่ะจ๊อดดด 👑", icon: "👑" };
+      if (percentage >= 80) return { name: "นี่บ้ารึเปล่าเนี่ย 😒", icon: "😒" };
+      if (percentage >= 70) return { name: "มันจ้าซะละเกิน 🔥", icon: "🔥" };
+      if (percentage >= 60) return { name: "ทำได้ดี แต่ยังไม่พอ 🥴", icon: "🥴" };
+      if (percentage >= 50) return { name: "ไปอ่านหนังสือออ!!! อย่ามัวขี้เกียจ 🧐", icon: "🧐" };
+      return { name: "โหย แม้งโคตรเหนื่อยเลย กินเหล้าอยู่บ้านก็ดีอยู่แล้ว 🍻", icon: "🍻" };
+    }
+
+    function showScoreSummary() {
+      clearInterval(timerInterval);
+      clearSavedProgress(); 
+
+      document.getElementById('quiz-area').style.display = 'none';
+      document.getElementById('summary-area').style.display = 'block';
+      playSound('tada');
+
+      document.getElementById('summary-cat-title').innerText = `ผลคะแนน: ${currentCategoryName}`;
+      document.getElementById('final-score-text').innerHTML = `${totalScore} <span>/ ${filteredData.length} คะแนน</span>`;
+      document.getElementById('summary-max-streak-text').innerText = `ทำคอมโบสูงสุดได้: ${maxStreak} ข้อต่อเนื่อง ⚡`;
+
+      const rankResult = calculateRank(totalScore, filteredData.length);
+      document.getElementById('summary-rank-icon').innerText = "🎺";
+      document.getElementById('rank-badge-text').innerText = `ยศ: ${rankResult.name}`;
+
+      sendScoreToGoogleSheet(currentCategoryName, totalScore, filteredData.length);
+    }
+
+    function sendScoreToGoogleSheet(category, score, total) {
+      if (!GAS_WEB_APP_URL || GAS_WEB_APP_URL.includes("ใส่_URL")) return;
+      
+      const payload = {
+        name: `${currentUser.name} (${currentUser.email})`,
+        category: category,
+        score: score,
+        total: total
+      };
+
+      fetch(GAS_WEB_APP_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => { console.log("บันทึกคะแนนลง Google Sheet สำเร็จ!"); })
+      .catch(err => { console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", err); });
+    }
+
+    function goHome() {
+      clearInterval(timerInterval);
+      document.getElementById('quiz-area').style.display = 'none';
+      document.getElementById('summary-area').style.display = 'none';
+      document.getElementById('menu-area').style.display = 'block';
+      renderCategoryMenu();
+    }
+  </script>
+</body>
+</html>
